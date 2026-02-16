@@ -1,0 +1,17 @@
+# Data files - too large for GitHub
+data/*.csv
+
+# Mac system files
+.DS_Store
+
+# DBeaver project files
+.dbeaver/
+
+# Project planning docs (not for public repo)
+download_companion_files.md
+mt-edu-project-detailed.md
+mt-edu-project-summary.md
+project-at-a-glance.md
+
+# Claude config
+.claude/
