@@ -11,3 +11,10 @@
 - Calculated student_teacher_ratio: ROUND(student_count / teachers, 1)
 - Filter: Montana only, 2024-2025, teachers > 0
 - Next: add more columns, join lunch table, handle NULL values, create mt_schools_clean table
+
+### Created mt_schools_clean table
+- Joined school_directory, school_membership, school_staff and school_lunch tables
+- Used left join b/c some schools may not have lunch data and we wanted to verify all data was included in results
+- derived student_teacher ratio by dividing student count by number of teachers
+- derived poverty_pct by dividing free_reduced_lunch count by student_count
+- 2485 total rows
