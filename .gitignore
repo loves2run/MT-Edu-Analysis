@@ -4,6 +4,7 @@ data/*.xlsx
 
 # Mac system files
 .DS_Store
+magic.mgc
 
 # DBeaver project files
 .dbeaver/
