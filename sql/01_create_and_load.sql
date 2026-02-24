@@ -156,6 +156,22 @@ SET search_path TO montana_schools;
 -- Total: 32,683
 
 -- =============================================
+-- TABLE 9: mt_cities_counties
+-- Source file: MT Counties_Full Data_data.csv (Montana Data Portal)
+-- Data scope: Montana only
+-- Import method: DBeaver wizard (UTF-16LE encoding, tab delimiter)
+-- Columns: 5
+-- Notes:
+--   - File was UTF-16LE encoded — set encoding in DBeaver import wizard
+--   - Tab-delimited, not comma-delimited
+--   - 593 of 642 rows have null zip codes — verified against source file, not an import error
+--   - Only 1 city appeared in multiple counties (Lakeside: Flathead co+ Lewis and Clark co)
+-- =============================================
+
+-- Row counts:
+-- 642 rows
+
+-- =============================================
 -- POST-IMPORT CLEANUP
 -- =============================================
 
