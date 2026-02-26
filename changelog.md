@@ -66,3 +66,30 @@
 - County distribution query: all 56 Montana counties present, counts sum to 2485 — no missing schools
 - NULL check: 0 rows — every school received a county value
 - Flathead spot check: Bigfork, Kalispell, Whitefish all mapping correctly to Flathead county
+
+## 02-25-2026
+
+### Investigated outliers in student_teacher_ratio
+- Queried ratios > 50 and < 2 to identify suspicious values
+- High ratio: Rise Charter & Distance HS (82:1) — distance learning school, legitimate data but should be excluded from county comparisons since student locations are unknown
+- Low ratios: small rural Montana schools (1-4 students) — legitimate real-world data, not errors
+- Special institutions: MT School for Deaf & Blind, Pine Hills Youth Correctional — low ratios expected given specialized populations
+- Multiple appearances of same school name confirmed to be different school years, not duplicates
+
+### Deleted 4 schools with 0 enrollment
+- Schools with 0 students are not serving students and should be excluded from resource distribution analysis
+- Verified 4 rows with SELECT before delete: CSD HS Rise Pathway Academy, Mount Ascension Learning Ac EL, Pondera Colony School, Rise Charter & Pathways EL
+- Deleted inside a transaction, verified 0 rows returned before committing
+- Row count: 2485 → 2481
+
+## 02-26-2026
+
+### Investigated non-traditional school classification
+- Ran SELECT DISTINCT sch_type_text — 3 values: Regular School, Alternative School, Special Education School
+- 12 schools classified as non-traditional (Alternative or Special Education)
+- Investigated charter schools via LOWER(sch_name) LIKE '%charter%' — confirmed NCES classifies charters as Regular School
+- Decision: sch_type_text sufficient for filtering in analysis queries — no additional boolean flag column needed
+
+### Checked mt_schools_clean for duplicates
+- Grouped by ncessch, sch_name, school_year with HAVING COUNT(*) > 1
+- Zero duplicates found

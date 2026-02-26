@@ -107,3 +107,72 @@ SELECT lcity, sch_name, county
 FROM montana_schools.mt_schools_clean
 WHERE county = 'Flathead'
 LIMIT 10;
+
+-- =============================================
+-- STEP 4: Data quality checks on mt_schools_clean
+-- =============================================
+
+-- Check for duplicates — ncessch + school_year should be unique
+SELECT ncessch, sch_name, school_year, COUNT(*)
+FROM montana_schools.mt_schools_clean
+GROUP BY ncessch, school_year, sch_name
+HAVING COUNT(*) > 1;
+-- Result: 0 duplicates found
+
+-- Check for outliers in student_teacher_ratio
+-- High ratio (>50) or low ratio (<2) may indicate data issues
+SELECT sch_name, school_year, student_count, teachers, sudent_teach_ratio
+FROM montana_schools.mt_schools_clean
+WHERE sudent_teach_ratio > 50
+   OR sudent_teach_ratio < 2
+ORDER BY sch_name ASC;
+-- Result: high ratios = distance learning schools (legitimate)
+--         low ratios = small rural schools and specialized institutions (legitimate)
+--         Note: Rise Charter & Distance HS (82:1) should be excluded from county comparisons
+
+-- Check for 0-enrollment schools
+SELECT sch_name, school_year, student_count, teachers, sudent_teach_ratio
+FROM montana_schools.mt_schools_clean
+WHERE student_count = 0
+ORDER BY sch_name ASC;
+-- Result: 4 rows found
+
+-- Delete 0-enrollment schools
+-- Rationale: schools with 0 students are not serving students and should be excluded
+BEGIN;
+
+DELETE FROM montana_schools.mt_schools_clean
+WHERE student_count = 0;
+
+-- Verify 0 rows remain before committing
+SELECT sch_name, school_year, student_count
+FROM montana_schools.mt_schools_clean
+WHERE student_count = 0;
+
+COMMIT;
+
+-- Confirm row count: 2485 → 2481
+SELECT COUNT(*) FROM montana_schools.mt_schools_clean;
+
+-- Investigate non-traditional school classification
+SELECT DISTINCT sch_type_text
+FROM montana_schools.mt_schools_clean;
+
+-- Count by school type
+SELECT sch_type_text, COUNT(*) as school_count
+FROM montana_schools.mt_schools_clean
+GROUP BY sch_type_text
+ORDER BY school_count DESC;
+
+-- Review non-traditional schools
+SELECT sch_name, lea_name, sch_type_text
+FROM montana_schools.mt_schools_clean
+WHERE sch_type_text IN ('Alternative School', 'Special Education School');
+
+-- Check charter schools — confirm NCES classifies as Regular School
+SELECT sch_name, lea_name, sch_type_text
+FROM montana_schools.mt_schools_clean
+WHERE LOWER(sch_name) LIKE '%charter%'
+   OR LOWER(lea_name) LIKE '%charter%';
+-- Result: charters classified as Regular School by NCES — no additional flag needed
+-- Use sch_type_text to filter non-traditional schools in analysis queries as needed
