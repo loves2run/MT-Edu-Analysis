@@ -93,3 +93,23 @@
 ### Checked mt_schools_clean for duplicates
 - Grouped by ncessch, sch_name, school_year with HAVING COUNT(*) > 1
 - Zero duplicates found
+
+## 02-27-2026
+
+### Modified column names for mt_schools_clean table to make them more readable
+- use ALTER TABLE montana_schools.mt_schools_clean RENAME current_column_name TO new_column_name
+- columns renamed:
+    - sch_name TO school_name
+    - lea_name TO district_name
+    - lcity TO city
+    - lzip TO zip_code
+    - student_count TO total_enrollment
+    - teachers TO teachers_fte
+    - sudent_teach_ratio TO student_teacher_ratio
+    - free_reduced_lunch TO free_reduced_lunch_count
+    - level TO school_level
+    - gslo TO grade_lowest
+    - gshi TO grade_highest
+    -sy_status_text TO school_status
+    - charter_text TO is_charter_school
+    - sch_type_text TO school_type

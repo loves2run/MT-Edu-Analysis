@@ -176,3 +176,50 @@ WHERE LOWER(sch_name) LIKE '%charter%'
    OR LOWER(lea_name) LIKE '%charter%';
 -- Result: charters classified as Regular School by NCES — no additional flag needed
 -- Use sch_type_text to filter non-traditional schools in analysis queries as needed
+
+
+-- ====================================================
+-- STEP 5: Rename columns on mt_schools_clean
+-- ====================================================
+-- renamed columns for readability
+
+alter table montana_schools.mt_schools_clean
+	rename sch_name to school_name;
+alter table montana_schools.mt_schools_clean
+	rename lea_name to district_name;
+
+alter table montana_schools.mt_schools_clean
+	rename lcity to city;
+
+alter table montana_schools.mt_schools_clean
+	rename lzip to zip_code;
+
+alter table montana_schools.mt_schools_clean
+	rename student_count to total_enrollment;
+
+alter table montana_schools.mt_schools_clean
+	rename teachers to teachers_fte;
+
+alter table montana_schools.mt_schools_clean
+	rename sudent_teach_ratio to student_teacher_ratio;
+
+alter table montana_schools.mt_schools_clean
+	rename	free_reduced_lunch to free_reduced_lunch_count;
+
+alter table montana_schools.mt_schools_clean
+	rename level to school_level;
+
+alter table montana_schools.mt_schools_clean
+	rename gslo to grade_lowest;
+
+alter table montana_schools.mt_schools_clean 
+	rename gshi to grade_highest;
+
+alter table montana_schools.mt_schools_clean
+	rename sy_status_text to school_status;
+
+alter table montana_schools.mt_schools_clean
+	rename charter_text to is_charter_school;
+
+alter table montana_schools.mt_schools_clean
+	rename sch_type_text to school_type;
