@@ -123,4 +123,15 @@
 - Fix: pull from lunch_program = 'No Category Codes' / total_indicator = 'Education Unit Total' / data_group = 'Free and Reduced-price Lunch Table'
 - Verified fix against C R Anderson (ncessch 300000500886): expected 311 for 2024-2025, confirmed correct
 - Updated free_reduced_lunch_count and poverty_pct via UPDATE inside transaction
-- Result: 1450 fo 2481 rows now hae lunch data (vs ~0 before); 1031 Null rows are schools with suppressed or unreported data - expected
+- Result: 1450 of 2481 rows now have lunch data (vs ~0 before); 1031 NULL rows are schools with suppressed or unreported data — expected
+
+### Investigated NULL distribution in free_reduced_lunch_count
+- Queried NULL rate by county and by enrollment band for 2024-2025
+- Finding: NULLs are driven almost entirely by school size, not geography
+    - Under 25 enrollment: 46.2% NULL
+    - 25–99 enrollment: 4.3% NULL
+    - 100+ enrollment: 0% NULL
+- Flathead County: only 4.2% NULL (2 of 48 schools) — near-complete coverage
+- High-null counties (e.g. Beaverhead 58%, Garfield 57%) have many tiny rural schools
+- Analytical caveat: county-level poverty comparisons may understate poverty in rural
+  counties where small school data is suppressed — should be noted in analysis

@@ -272,3 +272,42 @@ select
 from montana_schools.mt_schools_clean;
 
 commit;
+
+-- ====================================================
+-- STEP 7: Investigate NULL distribution in lunch data
+-- ====================================================
+-- Finding: NULLs are driven by school size, not geography
+-- Under 25 enrollment: 46.2% NULL
+-- 25-99 enrollment: 4.3% NULL
+-- 100+ enrollment: 0% NULL
+-- Analytical caveat: county-level poverty comparisons may understate poverty
+-- in rural counties where small school data is suppressed
+
+-- NULL rate by county
+SELECT
+    county,
+    COUNT(*) AS total_schools,
+    COUNT(free_reduced_lunch_count) AS lunch_reported,
+    COUNT(*) - COUNT(free_reduced_lunch_count) AS lunch_null,
+    ROUND(100.0 * (COUNT(*) - COUNT(free_reduced_lunch_count)) / COUNT(*), 1) AS pct_null
+FROM montana_schools.mt_schools_clean
+WHERE school_year = '2024-2025'
+GROUP BY county
+ORDER BY pct_null DESC;
+
+-- NULL rate by enrollment band
+SELECT
+    CASE
+        WHEN total_enrollment < 25 THEN '1. Under 25'
+        WHEN total_enrollment < 100 THEN '2. 25-99'
+        WHEN total_enrollment < 500 THEN '3. 100-499'
+        ELSE '4. 500+'
+    END AS enrollment_band,
+    COUNT(*) AS total_schools,
+    COUNT(free_reduced_lunch_count) AS lunch_reported,
+    COUNT(*) - COUNT(free_reduced_lunch_count) AS lunch_null,
+    ROUND(100.0 * (COUNT(*) - COUNT(free_reduced_lunch_count)) / COUNT(*), 1) AS pct_null
+FROM montana_schools.mt_schools_clean
+WHERE school_year = '2024-2025'
+GROUP BY enrollment_band
+ORDER BY enrollment_band;
