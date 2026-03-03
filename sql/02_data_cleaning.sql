@@ -223,3 +223,52 @@ alter table montana_schools.mt_schools_clean
 
 alter table montana_schools.mt_schools_clean
 	rename sch_type_text to school_type;
+
+
+-- ====================================================
+-- STEP 6: Fix free_reduced_lunch_count and poverty_pct
+-- ====================================================
+-- Original CREATE TABLE summed 'Free lunch qualified' + 'Reduced-price lunch
+-- qualified' rows from school_lunch, but student_count is NULL for suppressed
+-- data — leaving nearly all lunch values NULL.
+-- Fix: use the 'No Category Codes' / 'Education Unit Total' row which contains
+-- the pre-summed total and is more broadly reported.
+
+-- Verification: confirm pre-summed row exists for a known school
+-- C R Anderson (300000500886) should return 311 for 2024-2025
+select ncessch, school_year, student_count
+from montana_schools.school_lunch
+where lunch_program = 'No Category Codes'
+    and total_indicator = 'Education Unit Total'
+    and data_group = 'Free and Reduced-price Lunch Table'
+    and ncessch = '300000500886';
+
+-- Update lunch columns using pre-summed total row
+begin;
+
+update montana_schools.mt_schools_clean m
+set
+    free_reduced_lunch_count = l.total_lunch,
+      poverty_pct = ROUND(100.0 * l.total_lunch / m.total_enrollment, 1)
+from (
+    select ncessch, school_year, student_count AS total_lunch
+    from montana_schools.school_lunch
+    where lunch_program = 'No Category Codes'
+        and total_indicator = 'Education Unit Total'
+        and data_group = 'Free and Reduced-price Lunch Table'
+        and student_count IS NOT NULL
+) l
+where m.ncessch = l.ncessch
+    and m.school_year = l.school_year;
+
+-- Verify counts before committing
+-- Expect: total=2481, lunch_not_null=1450, poverty_not_null=1450
+select
+    COUNT(*) as total_rows,
+    COUNT(free_reduced_lunch_count) as lunch_not_null,
+    COUNT(*) - COUNT(free_reduced_lunch_count) as lunch_null,
+    COUNT(poverty_pct) as poverty_not_null,
+    COUNT(*) - COUNT(poverty_pct) as poverty_null
+from montana_schools.mt_schools_clean;
+
+commit;

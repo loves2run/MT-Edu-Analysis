@@ -113,3 +113,14 @@
     -sy_status_text TO school_status
     - charter_text TO is_charter_school
     - sch_type_text TO school_type
+
+
+
+## 03-02-2026
+
+### Fixed free_reduced_lunch_count and poverty_pct calculations in mt_schools_clean table
+- Discovered original CREATE TABLE subquery summed 'Free lunch qualified' + 'Reduced-price lunch qualified' rows from school_lunch table, but those rows have NULL student_count for suppressed/unreported data. This rendered nearly all lunch values Null (original method: only 1 valid school/year pair)
+- Fix: pull from lunch_program = 'No Category Codes' / total_indicator = 'Education Unit Total' / data_group = 'Free and Reduced-price Lunch Table'
+- Verified fix against C R Anderson (ncessch 300000500886): expected 311 for 2024-2025, confirmed correct
+- Updated free_reduced_lunch_count and poverty_pct via UPDATE inside transaction
+- Result: 1450 fo 2481 rows now hae lunch data (vs ~0 before); 1031 Null rows are schools with suppressed or unreported data - expected
