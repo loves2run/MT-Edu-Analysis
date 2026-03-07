@@ -194,3 +194,50 @@ SET search_path TO montana_schools;
 --   *-school-lunch-MT.csv (85 MB -> ~650 KB)
 --   *-district-membership-MT.csv (620 MB -> ~10 MB)
 --   *-district-staff-MT.csv (57 MB -> ~1.2 MB)
+
+-- =============================================
+-- TABLE 10: graduation_rates_raw
+-- Source file: Data Download Tool (1).csv
+-- Source: ED Data Express (eddataexpress.ed.gov)
+-- Data scope: Montana only
+-- Import method: DBeaver wizard (CSV, comma-delimited)
+-- Columns: 18
+-- Notes:
+--   - Contains Four-Year Adjusted Cohort Graduation Rate (ACGR) data
+--   - Includes both school-level and district-level rows mixed together
+--   - District-level rows have blank school and nces_school_id columns
+--   - For district analysis: filter WHERE school = '' AND subgroup = 'All Students in LEA'
+--   - For school analysis: join on nces_school_id = mt_schools_clean.ncessch
+--   - Value column contains banded rates (e.g. '60-69%', '>=50%'), exact rates,
+--     'S' (suppressed), and '.' (no data — school-level rows only, 2020-2021)
+--   - 16 distinct subgroups including race/ethnicity, economic status, disability
+--   - 92% school-level coverage for Montana high schools (171 of 186)
+--   - leaid stored as integer — Montana LEAIDs start with 3, no leading zero risk
+-- =============================================
+
+-- Row counts:
+-- 2020-2021: 3,048
+-- 2021-2022: 2,225
+-- 2022-2023: 2,213
+-- Total: 7,486
+
+CREATE TABLE montana_schools.graduation_rates_raw (
+    school_year          VARCHAR(50),
+    state                VARCHAR(50),
+    leaid                INTEGER,
+    lea                  VARCHAR(50),
+    school               VARCHAR(50),
+    nces_school_id       VARCHAR(50),
+    data_group           VARCHAR(50),
+    data_description     VARCHAR(64),
+    value                VARCHAR(50),
+    denominator          INTEGER,
+    numerator            VARCHAR(50),
+    population           VARCHAR(50),
+    subgroup             VARCHAR(50),
+    group_characteristics VARCHAR(50),
+    age_grade            VARCHAR(50),
+    academic_subject     VARCHAR(50),
+    program_type         VARCHAR(50),
+    outcome              VARCHAR(50)
+);
