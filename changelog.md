@@ -133,5 +133,27 @@
     - 100+ enrollment: 0% NULL
 - Flathead County: only 4.2% NULL (2 of 48 schools) — near-complete coverage
 - High-null counties (e.g. Beaverhead 58%, Garfield 57%) have many tiny rural schools
-- Analytical caveat: county-level poverty comparisons may understate poverty in rural
-  counties where small school data is suppressed — should be noted in analysis
+- Analytical caveat: county-level poverty comparisons may understate poverty in rural counties where small school data is suppressed — should be noted in analysis
+
+## 03-06-2026
+
+### Imported graduation_rates_raw table
+- Located graduation rates for Montana schools from https://eddataexpress.ed.gov/
+- Most current year of data available was 2022-2023, so downloaded combined dataset for 2022-2023, 2021-2022, and 2020-2021
+- 7486 total rows. Counts by school year: 2020-2021 (3048), 2021-2022 (2225), 2022-2023 (2213)
+
+### Sanity checks on graduation_rates_raw
+- Investigated row count discrepancy in 2020-2021 (37% more rows than other years)
+- Initially suspected COVID-19 reporting anomalies or duplicates
+- District-level row counts consistent across all three years: 2020-2021 (158), 2021-2022 (161), 2022-2023 (162) — data is clean and comparable
+- Confirmed '.' values in 2020-2021 value column are school-level only — zero '.' values in district-level rows — no impact on district analysis
+- Confirmed 92% school-level graduation rate coverage for high schools: 171 of 186 Montana high schools have school-level graduation rate data
+- Decision: keep all three years including 2020-2021
+- For analysis: filter to school = '' AND subgroup = 'All Students in LEA' for district-level comparisons; join on nces_sch_id = ncessch for school-level
+
+## 03-07-2026
+
+### Revised focus of analysis from Flathead County to Kalispell Public Schools, district 5
+- discovered KPS spans 2 LEAIDs (3015450 and 3015420)
+- identified feeder district complexity and how to handle it (provide caveat for analysis)
+- rewrote business questions for updated focus
