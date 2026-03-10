@@ -11,9 +11,9 @@ Look at all columns and decide which are needed. The raw table has 18 columns â€
 
 **Why:** No point cleaning or carrying columns you'll never use.
 
-- [ ] Inspect the raw table to see all columns and sample values
-- [ ] Identify any columns that appear empty, constant, or clearly irrelevant
-- [ ] Document which columns to keep and why
+- [x] Inspect the raw table to see all columns and sample values
+- [x] Identify any columns that appear empty, constant, or clearly irrelevant
+- [x] Document which columns to keep and why
 
 ---
 
@@ -37,6 +37,8 @@ Based on step 2 findings, decide whether to keep both levels together or handle 
 
 - [ ] Choose an approach: single table with a level flag, or two separate tables
 - [ ] Document your decision and rationale
+
+**Note:** Do not write the CREATE TABLE yet â€” Steps 4 and 5 still need to resolve how the value column will be structured. The CREATE TABLE happens after Step 6.
 
 ---
 
@@ -77,6 +79,8 @@ Drop or ignore columns that are empty, redundant, or not useful for the planned 
 
 - [ ] Finalize the column list before writing the CREATE TABLE statement
 - [ ] Make sure each column kept ties back to at least one business question
+
+**You are now ready to write the CREATE TABLE statement.**
 
 ---
 

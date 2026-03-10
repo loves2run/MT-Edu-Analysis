@@ -1,3 +1,7 @@
+-- ============================================================
+-- SECTION 1: mt_schools_clean
+-- ============================================================
+
 -- =============================================
 -- STEP 1: Create mt_schools_clean table
 -- Joins school_directory, school_membership, school_staff, school_lunch
@@ -311,3 +315,87 @@ FROM montana_schools.mt_schools_clean
 WHERE school_year = '2024-2025'
 GROUP BY enrollment_band
 ORDER BY enrollment_band;
+
+-- ============================================================
+-- SECTION 2: graduation_rates_raw → graduation_rates_clean
+-- ============================================================
+
+-- ====================================================
+-- STEP 1: Column selection for graduation_rates_clean
+-- ====================================================
+-- columns dropped from graduation_rates_raw:
+-- state                - constant (all Montana)
+-- data_group           - internal DOE categorization, not analytically useful
+-- data_description     - entire table is ACGR, column adds no information
+-- numerator            - all NULL throughout table
+-- population           - constant (‘All Students’)
+-- group_characteristics - all empty
+-- age_grade            - all empty
+-- academic_subject     - all empty
+-- program_type         - all empty
+-- outcome              - all empty
+
+-- ====================================================
+-- STEP 2: Investigate 2020-21 school-level row count discrepancy
+-- ====================================================
+-- Finding: discrepancy is entirely at school level
+-- District-level rows are consistent: 2020-21 (1044), 2021-22 (1071), 2022-23 (1063)
+-- School-level rows differ significantly: 2020-21 (2044), 2021-22 (1154), 2022-23 (1150)
+-- District and school counts are similar across years — same entities represented
+-- Subgroup categories identical across years (12 distinct values each year)
+-- Hypothesis: 2020-21 includes a row per subgroup even when suppressed/missing;
+--             later years omit rows where a subgroup has no reportable data
+-- ~12.2 rows/school in 2020-21 vs ~6.75 rows/school in 2021-22 supports this
+-- Next: confirm by comparing S/. value counts by year or inspecting a single school
+
+-- District-level row counts by year
+SELECT school_year, COUNT(*)
+FROM montana_schools.graduation_rates_raw
+WHERE school = ‘’
+GROUP BY school_year
+ORDER BY school_year;
+
+-- School-level row counts by year
+SELECT school_year, COUNT(*)
+FROM montana_schools.graduation_rates_raw
+WHERE school <> ‘’
+GROUP BY school_year;
+
+-- Distinct district (leaid) counts by year — district and school level
+SELECT school_year, COUNT(DISTINCT leaid)
+FROM montana_schools.graduation_rates_raw
+WHERE school = ‘’
+GROUP BY school_year
+ORDER BY school_year;
+
+SELECT school_year, COUNT(DISTINCT leaid)
+FROM montana_schools.graduation_rates_raw
+WHERE school <> ‘’
+GROUP BY school_year
+ORDER BY school_year;
+
+-- Distinct school counts by year
+SELECT school_year, COUNT(DISTINCT school)
+FROM montana_schools.graduation_rates_raw
+GROUP BY school_year
+ORDER BY school_year;
+
+-- Distinct subgroup counts by year (school-level)
+SELECT school_year, COUNT(DISTINCT subgroup)
+FROM montana_schools.graduation_rates_raw
+WHERE school <> ‘’
+GROUP BY school_year
+ORDER BY school_year;
+
+-- Distinct lea counts by year — district and school level
+SELECT school_year, COUNT(DISTINCT lea)
+FROM montana_schools.graduation_rates_raw
+WHERE school = ‘’
+GROUP BY school_year
+ORDER BY school_year;
+
+SELECT school_year, COUNT(DISTINCT lea)
+FROM montana_schools.graduation_rates_raw
+WHERE school <> ‘’
+GROUP BY school_year
+ORDER BY school_year;

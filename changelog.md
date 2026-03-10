@@ -135,6 +135,7 @@
 - High-null counties (e.g. Beaverhead 58%, Garfield 57%) have many tiny rural schools
 - Analytical caveat: county-level poverty comparisons may understate poverty in rural counties where small school data is suppressed — should be noted in analysis
 
+---
 ## 03-06-2026
 
 ### Imported graduation_rates_raw table
@@ -157,3 +158,32 @@
 - discovered KPS spans 2 LEAIDs (3015450 and 3015420)
 - identified feeder district complexity and how to handle it (provide caveat for analysis)
 - rewrote business questions for updated focus
+
+## 03-09-2026
+### Reviewed graduation_rates_raw table (GRR) to determine which rows to keep/drop
+- school_year - needed for longitudinal comparison 
+- state - NOT NEEDED b/c all Montana
+- leaid - needed for district comparison
+- lea - needed for clarity of district comparison
+- school - needed in case school-level analysis is completed
+- nces_school_id - need in case school-level analysis is completed
+- data_group - extraneous information only meaningful to Department of Education
+- data_description - NOT NEEDED b/c the entire table is focused on ACGR
+- value - needed, but needs to be renamed to more meaningful title (this is the primary metric - needed for table)
+- denominator - needed b/c this is the enrollment count, needs renamed 
+- numerator - NOT NEEDED - empty throughout table
+- population- NOT NEEDED b/c listed as ‘All Students’ throughout table
+- subgroup - Needed, shows important demographics
+- group_characteristics - NOT NEEDED b/c empty values throughout chart
+- age_grade - NOT NEEDED b/c empty values throughout chart
+- academic_subject - NOT NEEDED b/c empty values throughout chart
+- program_type - NOT NEEDED b/c empty values throughout chart
+- outcome - NOT NEEDED b/c empty values throughout chart
+
+### Investigated the 2020-21 row count discrepancy
+- Confirmed discrepancy is at school level: 2020-21 has 2,044 school-level rows vs ~1,150 for other years       
+- District-level counts are consistent across all years (~1,044–1,071 rows, 158–162 distinct districts)
+- School and district counts are similar across years — same entities represented
+- Subgroup categories identical across years (12 distinct values each)
+- Hypothesis: 2020-21 includes a row per subgroup even when suppressed/missing; later years omit those rows
+- Next: confirm hypothesis by comparing S/. counts by year or inspecting a single school across years
