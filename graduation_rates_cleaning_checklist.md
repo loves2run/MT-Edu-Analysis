@@ -23,9 +23,9 @@ District-level row counts are consistent across years (158/161/162), but the 202
 
 **Why:** Before cleaning, confirm whether 2020-21 school-level data is trustworthy or structurally different.
 
-- [ ] Separate school-level and district-level rows and compare counts by year
-- [ ] Look for structural differences in 2020-21 that might explain the extra rows
-- [ ] Decide whether 2020-21 school-level data is safe to include
+- [x] Separate school-level and district-level rows and compare counts by year
+- [x] Look for structural differences in 2020-21 that might explain the extra rows
+- [x] Decide whether 2020-21 school-level data is safe to include
 
 ---
 

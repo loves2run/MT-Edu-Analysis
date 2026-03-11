@@ -187,3 +187,10 @@
 - Subgroup categories identical across years (12 distinct values each)
 - Hypothesis: 2020-21 includes a row per subgroup even when suppressed/missing; later years omit those rows
 - Next: confirm hypothesis by comparing S/. counts by year or inspecting a single school across years
+
+## 03-10-2026
+### Confirmed step 2 hypothesis from graduation_rates_raw_cleaning_checklist.md
+- Investigated KPS schools-level data: confirmed leaid 3015420, verified subgroup structure for Glacier High School and Flathead High School (12 rows per year, consistent across years)
+- Confirmed hypothesis: 883 rows in 2020-2021 have value= '.' and denominator = 0 --> ie these rows carry no analytical value
+- The 2020-2021 data contains all rows for subgroups even when there was no value (i.e. value = '.' and denominator = 0). 
+- DECISION MADE: remove the rows from 2020-2021 data that have value = '.' and denominator = 0 (883 rows).

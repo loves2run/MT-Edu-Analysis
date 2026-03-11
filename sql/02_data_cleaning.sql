@@ -399,3 +399,16 @@ FROM montana_schools.graduation_rates_raw
 WHERE school <> ‘’
 GROUP BY school_year
 ORDER BY school_year;
+
+-- Confirm hypothesis: verify dot rows have denominator = 0
+-- Result: 883 rows with value='.' all have denominator=0 — zero students, not missing data
+select value, denominator, COUNT(*)
+from montana_schools.graduation_rates_raw
+where school_year = '2020-2021'
+    and school <> ''
+group by value, denominator
+order by value;
+
+-- Decision: these rows will be excluded from graduation_rates_clean
+-- Rationale: denominator=0 means no students in subgroup — not a graduation rate,
+-- not suppressed data. Inconsistent with later years which omit these rows entirely.
