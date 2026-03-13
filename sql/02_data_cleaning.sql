@@ -412,3 +412,24 @@ order by value;
 -- Decision: these rows will be excluded from graduation_rates_clean
 -- Rationale: denominator=0 means no students in subgroup — not a graduation rate,
 -- not suppressed data. Inconsistent with later years which omit these rows entirely.
+
+-- Decision: use flag column to distinguish school-level, district-level and state-level rows        
+-- TO DO: Add 'data_level' column in graduation_rates_clean using CASE:
+--   WHEN leaid is null THEN 'state'                                                                 
+--   WHEN school = '' THEN 'district'
+--   ELSE 'school'
+
+--step 5 from graduation_rates_raw_cleaning_checklist
+-- suppressed rows at district vs school level vs total rows in table unfiltered
+-- num_dist_rows =1542, num_school_rows =1639, total_rows =7486
+
+select
+	case 
+        when leaid is null then 'state'
+		when school = '' then 'district'
+        else 'school'
+	end as data_level,
+	count(*) as suppressed_rows
+from montana_schools.graduation_rates_raw grr 
+where value = 'S'
+group by data_level;

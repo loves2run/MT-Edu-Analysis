@@ -194,3 +194,16 @@
 - Confirmed hypothesis: 883 rows in 2020-2021 have value= '.' and denominator = 0 --> ie these rows carry no analytical value
 - The 2020-2021 data contains all rows for subgroups even when there was no value (i.e. value = '.' and denominator = 0). 
 - DECISION MADE: remove the rows from 2020-2021 data that have value = '.' and denominator = 0 (883 rows).
+
+## 03-12-2026
+### Made decision to use flag column to discern school, district, or state level data in graduation_rates_raw (step 3 graduation_rates_raw_cleaning_checklist)
+- found 42 rows that did not have a school or lea listed, which are state level aggregated data
+- the 42 rows have 14 each per school year where lea = 'Montana'
+- DECISION MADE: 2 tables means some of the information would be duplicated. Not necessary. A single table with a flag allows me to filter for school vs district data.
+
+### step 4 of cleaning checklist!!!!!!!!! START HERE!!!!!!!!
+- 
+
+### step 5 of cleaning checklist - Determine how to handle suppressed values from graduation_rates_raw table
+- identified that there are 1542 rows of district-level data in the table with suppressed values compared to 1639 rows with suppressed values at school-level using a CASE statement
+- total rows for table without filters is 7486

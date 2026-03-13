@@ -35,8 +35,8 @@ Based on step 2 findings, decide whether to keep both levels together or handle 
 
 **Why:** Mixing levels in one table creates aggregation errors. A flag or split prevents accidental double-counting.
 
-- [ ] Choose an approach: single table with a level flag, or two separate tables
-- [ ] Document your decision and rationale
+- [x] Choose an approach: single table with a level flag, or two separate tables
+- [x] Document your decision and rationale
 
 **Note:** Do not write the CREATE TABLE yet — Steps 4 and 5 still need to resolve how the value column will be structured. The CREATE TABLE happens after Step 6.
 
@@ -66,7 +66,7 @@ Decide whether `S` becomes NULL or gets a separate flag.
 
 **Why:** Suppressed data isn't missing data — it signals a small population. Treating it as NULL loses that distinction and can mislead analysis.
 
-- [ ] Check how common suppressed values are at the district level
+- [x] Check how common suppressed values are at the district level (1642)
 - [ ] Decide whether the distinction between suppressed and missing is important enough to preserve explicitly
 
 ---
