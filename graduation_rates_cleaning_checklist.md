@@ -46,6 +46,8 @@ Based on step 2 findings, decide whether to keep both levels together or handle 
 
 The graduation rate column contains a mix of formats that need to be converted into something analytically useful.
 
+**Note:** denominator = adjusted cohort (not enrollment) - verified 03-16-2026
+
 Known value types:
 - Exact numeric strings: `"72.4"`
 - Banded ranges of varying widths: `"GE50LT60"`, `"GE80"`, etc.

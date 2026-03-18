@@ -419,10 +419,6 @@ order by value;
 --   WHEN school = '' THEN 'district'
 --   ELSE 'school'
 
---step 5 from graduation_rates_raw_cleaning_checklist
--- suppressed rows at district vs school level vs total rows in table unfiltered
--- num_dist_rows =1542, num_school_rows =1639, total_rows =7486
-
 select
 	case 
         when leaid is null then 'state'
@@ -433,3 +429,47 @@ select
 from montana_schools.graduation_rates_raw grr 
 where value = 'S'
 group by data_level;
+
+-- **** step 4 goes here!!!!******
+
+
+
+-- step 5 from graduation_rates_raw_cleaning_checklist
+-- suppressed rows at district vs school level vs total rows in table unfiltered
+-- num_dist_rows =1542, num_school_rows =1639, total_rows =7486
+
+-- ====================================================
+-- KPS Flathead H S enrollment benchmark (03-17-2026)
+-- Used to define peer districts for graduation rate comparison
+-- ====================================================
+-- Note: denominator in graduation_rates_raw is the adjusted cohort (~1 grade),
+-- NOT total enrollment. Verified 03-16-2026: Flathead H S 2022-23 total enrollment
+-- = 3,101 vs denominator = 757 (~24% — consistent with one grade cohort out of four).
+-- Use mt_schools_clean enrollment for peer district size matching.
+
+-- Flathead H S enrollment by year
+-- Excludes Flathead Pace Academy (22) and Kalispell Rising Wolf Charter (11) —
+-- both new in 2024-2025 only, too small and inconsistent across years for benchmarking.
+-- They account for only ~20% of the 2024-25 enrollment drop; drop is real.
+-- Results: 2022-2023: 3101, 2023-2024: 3105, 2024-2025: 2943
+-- 3-year average: ~3,049 — used as KPS size benchmark for peer matching
+select
+    school_year,
+    SUM(total_enrollment) as total_enrollment
+from montana_schools.mt_schools_clean
+where
+    school_name = 'Flathead High School'
+    or school_name = 'Glacier High School'
+group by school_year
+order by school_year;
+
+-- Same query including the two small new schools for reference
+-- Results: 2022-2023: 3101, 2023-2024: 3105, 2024-2025: 2976
+select
+    school_year,
+    SUM(total_enrollment) as total_enrollment
+from montana_schools.mt_schools_clean
+where
+    district_name = 'Flathead H S'
+group by school_year
+order by school_year;

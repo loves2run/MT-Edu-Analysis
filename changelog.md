@@ -199,7 +199,7 @@
 ### Made decision to use flag column to discern school, district, or state level data in graduation_rates_raw (step 3 graduation_rates_raw_cleaning_checklist)
 - found 42 rows that did not have a school or lea listed, which are state level aggregated data
 - the 42 rows have 14 each per school year where lea = 'Montana'
-- DECISION MADE: 2 tables means some of the information would be duplicated. Not necessary. A single table with a flag allows me to filter for school vs district data.
+- DECISION MADE: Maintain single table with flag column to differentiate data. 2 tables means some of the information would be duplicated. Not necessary. A single table with a flag allows me to filter for school vs district data.
 
 ### step 4 of cleaning checklist!!!!!!!!! START HERE!!!!!!!!
 - 
@@ -207,3 +207,18 @@
 ### step 5 of cleaning checklist - Determine how to handle suppressed values from graduation_rates_raw table
 - identified that there are 1542 rows of district-level data in the table with suppressed values compared to 1639 rows with suppressed values at school-level using a CASE statement
 - total rows for table without filters is 7486
+
+## 03-16-2026
+### Verified 'denominator' column in graduation_rates_raw is the ACGR (entering 9th-grade class ~4years prior), not enrollment
+- Evidence: Flathead H S 2022-2023 total enrollment in mt_schools_clean is 3,101 vs denominator = 757 (~24% - consistent with one grade cohort out of four)
+- Implication: I cannot us denominator as a proxy for district size; use mt_schools_clean enrollment for peer district comparisons
+
+## 03-17-2026
+### Queried Flathead H S enrollment to verify average enrollment in preparation to define 'similar size districts' for analysis
+- Enrollment by year: 2022-2023: 3101; 2023-2024: 3105; 2024-2025: 2943
+- Average over 3 years: 3,049
+- found 2 new schools for 2024-2025 school year: Flathead Pace Academy (22) and Kalispell Rising Wolf Charter (11)
+- Decision: exclude new schools from peer comparison - minimal enrollment and not consistent across years. 
+- Decision: peer districts will be defined statewide by enrollment size only, not geography
+- Decision: peer analysis scoped to high school level only (graduation rates are a HS metric only)
+- Caveat noted: mt_schools_clean table based on years (2022-2025) and doesn't fully align with graduation_rates_raw table, based on year (2020 -2023) as 2023 was latest data available for graduation rates.
