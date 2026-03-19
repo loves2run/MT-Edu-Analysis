@@ -473,3 +473,53 @@ where
     district_name = 'Flathead H S'
 group by school_year
 order by school_year;
+
+-- ====================================================
+-- PEER DISTRICT IDENTIFICATION (03-19-2026)
+-- Identifies Montana HS districts comparable to Flathead H S by enrollment size
+-- ====================================================
+-- Methodology: natural break approach — Montana major city HS districts form a
+-- clear tier. Billings H S excluded as outlier (+79%). Missoula H S included
+-- despite being just outside ±25% band (+27.5%) — natural urban peer.
+-- Peer districts: Missoula H S, Great Falls H S, Bozeman H S, Helena H S
+-- Great Falls H S is closest true peer (-0.3% vs KPS benchmark of 3,049)
+
+-- 3/19/26: working on a CTE to solve for average aggregate enrollment by school district
+/*Peer districts were defined as Montana high school districts serving
+ * similarly-sized urban populations. Billings was excluded as an outlier (79% larger than KPS).
+ * The remaining four major city districts — Missoula, Great Falls, Bozeman, and Helena — form a natural peer group.
+*/
+with hs_only as (
+    select *
+    from montana_schools.mt_schools_clean
+    where
+        grade_lowest = '09'
+        and grade_highest = '12'
+        and total_enrollment > 100
+),
+
+district_by_year as (
+    select
+        school_year,
+        district_name,
+        SUM(total_enrollment) as total_enrollment
+    from hs_only
+    group by
+        district_name,
+        school_year
+),
+
+district_avg as (
+    select
+        district_name,
+        ROUND(AVG(total_enrollment), 0) as avg_enrollment
+    from district_by_year
+    group by district_name
+)
+
+select
+    *,
+    ROUND(100.0 * (avg_enrollment - 3050) / 3050, 1) as pct_diff_from_fhs
+from district_avg
+order by avg_enrollment desc
+limit 10;

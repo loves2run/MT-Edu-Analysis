@@ -222,3 +222,14 @@
 - Decision: peer districts will be defined statewide by enrollment size only, not geography
 - Decision: peer analysis scoped to high school level only (graduation rates are a HS metric only)
 - Caveat noted: mt_schools_clean table based on years (2022-2025) and doesn't fully align with graduation_rates_raw table, based on year (2020 -2023) as 2023 was latest data available for graduation rates.
+
+## 03-19-2026
+### Identified peer districts for Flathead H S comparison
+- Built a 3-step CTE to aggregate HS enrollment by district across years and compare to KPS benchmark (~3,049)
+- Filtered to grade_lowest = '09' and grade_highest = '12' and total_enrollment > 100
+- Initial approach used ±25% band (2,287–3,811); revised to natural break methodology after reviewing full district list
+- Natural break: clear tier of Montana major city HS districts, then large cliff to Butte H S (1,285) and below
+- Billings H S excluded as outlier (avg enrollment 5,459; 79% larger than KPS)
+- Missoula H S included despite being just outside ±25% band (3,890; +27.5%) — natural peer given urban context
+- PEER DISTRICTS DEFINED: Missoula H S, Great Falls H S, Bozeman H S, Helena H S
+- Great Falls H S is closest true peer (avg enrollment 3,040; -0.3% vs KPS)
