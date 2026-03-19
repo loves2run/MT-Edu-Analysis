@@ -225,7 +225,7 @@
 
 ## 03-19-2026
 ### Identified peer districts for Flathead H S comparison
-- Built a 3-step CTE to aggregate HS enrollment by district across years and compare to KPS benchmark (~3,049)
+- Built a 3-step CTE to aggregate HS enrollment by district across years and compare to KPS (i.e. Flathead H S) benchmark (~3,049)
 - Filtered to grade_lowest = '09' and grade_highest = '12' and total_enrollment > 100
 - Initial approach used ±25% band (2,287–3,811); revised to natural break methodology after reviewing full district list
 - Natural break: clear tier of Montana major city HS districts, then large cliff to Butte H S (1,285) and below
