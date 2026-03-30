@@ -233,3 +233,18 @@
 - Missoula H S included despite being just outside ±25% band (3,890; +27.5%) — natural peer given urban context
 - PEER DISTRICTS DEFINED: Missoula H S, Great Falls H S, Bozeman H S, Helena H S
 - Great Falls H S is closest true peer (avg enrollment 3,040; -0.3% vs KPS)
+
+## 03-30-2026
+### Decided how to handle value column in graduation_rates_raw (Steps 4 and 5)
+- Queried graduation_rates_raw for KPS and 4 peer districts (subgroup = 'All Students in LEA', district-level only)
+- All 5 peer districts have exact percentage values for all 3 years — no banded values in peer comparison data
+- Explored full value format landscape across all H S districts — identified 4 distinct formats:
+    - Exact: `84%` — strip % sign, cast to integer
+    - Banded range: `80-84%`, `60-69%`, etc.
+    - Open-ended lower bound: `>=50%`, `>=80%`, `>=90%`, `>=95%`
+    - Suppressed: `S`
+- `>=50%` bands apply exclusively to very small cohorts (≤15 students) — privacy-driven widening by NCES; midpoint would be meaningless
+- DECISION (Step 4): exact values → strip % and cast to integer; all other formats → NULL with original string preserved in a `value_flag` column
+- DECISION (Step 5): suppressed values (`S`) → NULL, preserved in `value_flag` — same approach as banded values
+- Analytical caveat: small-cohort districts will have NULL graduation rates; question 6 (statewide rate variation) must note that banded values are underrepresented in numeric analysis
+

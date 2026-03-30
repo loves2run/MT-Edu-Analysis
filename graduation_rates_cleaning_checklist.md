@@ -56,9 +56,15 @@ Known value types:
 
 **Why:** You can't do math or sort meaningfully on strings like `GE50LT60`.
 
-- [ ] Explore all distinct values in the value column to understand the full range of formats
-- [ ] Decide how to represent banded values numerically (midpoint, lower bound, or NULL + flag)
-- [ ] Plan a conversion approach that handles all value types in one place
+- [x] Explore all distinct values in the value column to understand the full range of formats
+- [x] Decide how to represent banded values numerically (midpoint, lower bound, or NULL + flag)
+- [x] Plan a conversion approach that handles all value types in one place
+
+**Decision (03-30-2026):**
+- Exact values (`84%`) → strip `%`, cast to integer
+- Banded ranges (`80-84%`, `>=50%`, etc.) → NULL; original string preserved in `value_flag`
+- Suppressed (`S`) → NULL; original string preserved in `value_flag`
+- Rationale: `>=50%` bands are privacy-driven and span up to 50 percentage points — midpoint would be meaningless. NULL + flag is honest and doesn't affect peer comparison (all 5 peers have exact values).
 
 ---
 
@@ -69,7 +75,9 @@ Decide whether `S` becomes NULL or gets a separate flag.
 **Why:** Suppressed data isn't missing data — it signals a small population. Treating it as NULL loses that distinction and can mislead analysis.
 
 - [x] Check how common suppressed values are at the district level (1642)
-- [ ] Decide whether the distinction between suppressed and missing is important enough to preserve explicitly
+- [x] Decide whether the distinction between suppressed and missing is important enough to preserve explicitly
+
+**Decision (03-30-2026):** Folded into Step 4 — `S` → NULL with original value preserved in `value_flag`.
 
 ---
 
