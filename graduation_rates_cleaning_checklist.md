@@ -87,8 +87,10 @@ Drop or ignore columns that are empty, redundant, or not useful for the planned 
 
 **Why:** Keeps the clean table lean and readable.
 
-- [ ] Finalize the column list before writing the CREATE TABLE statement
-- [ ] Make sure each column kept ties back to at least one business question
+- [x] Finalize the column list before writing the CREATE TABLE statement
+- [x] Make sure each column kept ties back to at least one business question
+
+    - **NOTE** 3/31/26: columns to keep confirmed in changelog.md from 3/9/26   
 
 **You are now ready to write the CREATE TABLE statement.**
 
