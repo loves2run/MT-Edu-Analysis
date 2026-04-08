@@ -201,8 +201,6 @@
 - the 42 rows have 14 each per school year where lea = 'Montana'
 - DECISION MADE: Maintain single table with flag column to differentiate data. 2 tables means some of the information would be duplicated. Not necessary. A single table with a flag allows me to filter for school vs district data.
 
-### step 4 of cleaning checklist!!!!!!!!! START HERE!!!!!!!!
-- 
 
 ### step 5 of cleaning checklist - Determine how to handle suppressed values from graduation_rates_raw table
 - identified that there are 1542 rows of district-level data in the table with suppressed values compared to 1639 rows with suppressed values at school-level using a CASE statement
@@ -248,3 +246,33 @@
 - DECISION (Step 5): suppressed values (`S`) → NULL, preserved in `value_flag` — same approach as banded values
 - Analytical caveat: small-cohort districts will have NULL graduation rates; question 6 (statewide rate variation) must note that banded values are underrepresented in numeric analysis
 
+## 04-02-2026
+### Created and populated graduation_rates_clean table
+- Table derived from original graduation_rates_raw table
+- Columns included school_year, leaid, lea, school, nces_school_id, denominator, and subgroup from original raw table
+  - value = '.' as previously decided. 
+- Conditional logic used to populate school_or_district column.
+- Added column for grad_rate_clean
+  - Used regex to populate column with just those rows from
+  - value column of graduation_rates_raw that contained full numbers
+  - (e.g. '56%') and then removed the '%' and converted to INTEGER.
+  - The remaining values were transformed to NULL.
+- Separate column (grad_rate_raw). It preserves the original raw string from the     
+  - value column when the value could not be converted to a number (bands, suppressed, etc).
+- leaid and denominator columns CAST to integer
+- denominator column re-named to acgr_cohort_size for clarity
+
+### Data cleaning and verification of graduation_rates_clean table
+- verified rows counts:
+  - 883 rows deleted with value = '.'
+  - expected and found 6603 rows in clean table from original 7486 in raw table
+- REMINDER: statewide data delineated by LEADID of NULL
+- verified conditional logic for school_or_district column
+- verified conditional logic for grad_rate_clean and grad_rate_raw columns
+- ran spot check for Flathead High School to verify grad_rate_clean and grad_rate_raw columns
+- verified regex used in query:
+  - values found to be mutually exclusive for the 2 columns (clean vs raw)
+  - only integers found in clean column
+  - banded values and suppressed values not present in clean column
+  - % symbol stripped from clean column to allow for further numeric analysis
+- verified acgr_cohort_size

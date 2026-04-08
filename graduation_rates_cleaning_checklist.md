@@ -108,6 +108,8 @@ The graduation rate data has `leaid` but no county. County is needed for regiona
 - [ ] Check how complete that join would be — are there districts that won't match?
 - [ ] Handle any gaps
 
+**Step 7 NOT needed** 3/31/26: business questions have been revised to focus on district-level comparisons, not county. If county-level data required, the mt_schools_clean table will be joined with graduation_rates_clean table as needed.
+
 ---
 
 ## Step 8 — Verify row counts and joins

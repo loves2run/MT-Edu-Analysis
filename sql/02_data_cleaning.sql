@@ -523,3 +523,184 @@ select
 from district_avg
 order by avg_enrollment desc
 limit 10;
+
+
+-- ====================================================
+-- Created graduation_rates_clean table (04-02-2026)
+-- ====================================================
+-- table created on 4/2/26
+create table montana_schools.graduation_rates_clean(
+	school_year VARCHAR(50),
+	leaid INTEGER,
+	lea VARCHAR(50),
+	school VARCHAR(50),
+	nces_school_id VARCHAR(50),
+	school_or_district VARCHAR(10),   --to differentiate school-level vs district-level data
+	grad_rate_clean INTEGER, -- cleaned/transformed values from graduation_rates_raw
+	grad_rate_raw varchar(50),  -- raw value column from graduationa_rates_raw
+	denominator INTEGER,
+	subgroup VARCHAR(50)
+);
+
+-- updated table on 4/2/26 to change name of denominator column 
+	-- renamed to acgr_cohort_size to clarify what it is
+
+alter table montana_schools.graduation_rates_clean 
+rename column denominator to acgr_cohort_size;
+
+-- updated table on 4/2/26 to change grad_rate_clean column
+	-- from INTEGER to REAL (ie. floating point number) due
+	-- to error attempting to run INSERT INTO query
+    -- error occurred due to floating point number values
+    -- in the original raw dataset could not be converted to integers
+alter table montana_schools.graduation_rates_clean 
+alter column grad_rate_clean type real;
+
+
+/*
+ * This query inserts values into new graduation_rates_clean table.
+ * The INSERT INTO query below first filters out the rows with
+ 	* value = '.' as previously decided. 
+ * Conditional logic used to populate school_or_district column.
+ * Added column for grad_rate_clean
+ 	* Used regex to populate column with just those rows from
+ 	* value column of graduation_rates_raw that contained full numbers
+ 	* (e.g. '56%') and then removed the '%' and converted to INTEGER.
+ 	* The remaining values were transformed to NULL.
+ * Separate column (grad_rate_raw). It preserves the original raw string from the     
+ 	* value column when the value could not be converted to a number (bands, suppressed, etc).
+ * leaid and denominator columns CAST to integer
+ */
+insert into montana_schools.graduation_rates_clean (
+	school_year,
+	leaid,
+	lea,
+	school,
+	nces_school_id,
+	school_or_district,
+	grad_rate_clean,
+	grad_rate_raw,
+	acgr_cohort_size,
+	subgroup
+)
+select
+	school_year,
+	CAST(leaid as INTEGER),
+	lea,
+	school,
+	nces_school_id,
+	case 
+		when school = '' then 'district'
+		else 'school'
+	end as school_or_district,
+	CAST(case 
+			when value ~ '[-><=S]' then null
+			else REPLACE(value, '%', '')
+		end as REAL) as grad_rate_clean,
+	case
+		when value ~ '[-><=S]' then value
+		else NULL
+	end as grad_rate_raw,
+	cast(denominator as INTEGER) as acgr_cohort_size,
+	subgroup
+from montana_schools.graduation_rates_raw
+where value <> '.';
+
+/*
+==========================================================
+Verification of graduation_rates_clean table
+==========================================================
+ */
+
+-- 4/2/26: values now inserted into graduation rates clean. 
+-- 883 rows deleted from graduation_rates_raw for value 
+	-- equal to '.' --> expected and found 6603 rows in
+	-- graduation_rates_clean table from original 7486 rows
+	-- of raw table
+select COUNT(*) as num_rows
+from montana_schools.graduation_rates_raw;
+
+select COUNT(*) as rows_deleted
+from montana_schools.graduation_rates_raw
+where value = '.';
+
+select COUNT(*) as num_rows
+from montana_schools.graduation_rates_clean;
+
+-- 4/2/26: REMINDER!!! statewide data delineated by LEAID of NULL!
+select *
+from montana_schools.graduation_rates_clean
+where leaid is null;
+
+select 
+	school_year,
+	COUNT(school_year)
+from montana_schools.graduation_rates_clean
+where leaid is null
+group by school_year
+order by school_year;
+
+-- 4/2/26: Verify conditional logic for school_district column
+-- returned 0 rows for both queries
+select
+	school_year,
+	COUNT(school_year)
+from montana_schools.graduation_rates_clean
+where 
+	school = ''
+	and school_or_district <> 'district'
+group by school_year;
+
+select 
+	school_year,
+	COUNT(school_year)
+from montana_schools.graduation_rates_clean
+where 
+	school <> ''
+	and school_or_district <> 'school'
+group by school_year;
+
+
+
+-- Verify grad_rates_clean and grad_rates_raw columns
+-- To be accurate the clean and raw columns should not 
+	-- be null at same time
+-- 0 rows returned
+
+select *
+from montana_schools.graduation_rates_clean 
+where
+	(grad_rate_clean is null
+	and grad_rate_raw is null)
+	or (grad_rate_clean is not null 
+	and grad_rate_raw is not null);
+
+-- Ran spot check for Flathead High School to verify grad_rate_raw
+	-- and grad_rate_clean values were mutually exclusive (i.e. not null
+	-- at same time).
+-- Query also confirms that regex worked properly: 
+	-- only integers in grad_rate_clean
+	-- Values with symbols like 'S', '>', '<', '-' only appear in grad_rate_raw
+	-- '%' symbol stripped from grad_rate_clean
+select 	
+	school_year,
+	lea,
+	school,
+	grad_rate_clean,
+	grad_rate_raw,
+	acgr_cohort_size,
+	subgroup
+from montana_schools.graduation_rates_clean
+where
+	school_year = '2022-2023'
+	and school like '%Flathead%';
+
+
+
+-- Verify values for acgr_cohort_size
+-- 0 rows returned; row is clean
+select *
+from montana_schools.graduation_rates_clean
+where 
+	acgr_cohort_size is null
+	or acgr_cohort_size = 0;
