@@ -14,21 +14,19 @@ Graduation rate analysis reflects the full Flathead H S cohort, which includes n
 ## Phase 1 — Current State (mt_schools_clean + graduation_rates_raw)
 
 1. How does KPS compare to peer districts of similar enrollment size in resources and outcomes — analyzed separately for elementary (Kalispell Elem) and high school (Flathead H S) levels?
-   - **Note (3/31/26):** High school outcomes available via graduation rates (graduation_rates_raw). Elementary outcomes not available — unable to obtain raw assessment or chronic absenteeism data from eddataexpress.ed.gov. Elementary comparison limited to resources only (enrollment, staffing, poverty).
-2. How are educational resources distributed across Montana by district?
-3. How do smaller school districts compare to larger school districts in resources and outcomes?
-   - **Note (3/31/26):** Resources comparison fully available. Outcome comparisons limited — smaller districts have banded or suppressed graduation rate values, making precise numeric comparison unreliable.
-5. Which school districts serve high-poverty communities?
-6. How do graduation rates vary across Montana districts and what factors correlate with higher/lower rates?
+   - **Note (3/31/26):** High school outcomes available via graduation rates (graduation_rates_raw). Elementary outcomes not available — unable to obtain raw assessment scores or chronic absenteeism data from eddataexpress.ed.gov. Elementary comparison limited to resources only (enrollment, staffing, poverty).
 
-## Phase 2 — Trends Over Time (requires district tables)
-
-4. How are Montana districts changing over time in enrollment, demographic makeup, and staffing?
+2. Which school districts serve high-poverty communities?
+3. How do graduation rates vary across Montana districts and what factors correlate with higher/lower rates?
 
 ---
 
-## Future Consideration — Geographic Distribution
+## Future Consideration
 
+- How are educational resources distributed across Montana by district?
+- How do smaller school districts compare to larger school districts in resources and outcomes?
+   - **Note (3/31/26):** Resources comparison fully available. Outcome comparisons limited — smaller districts have banded or suppressed graduation rate values, making precise numeric comparison unreliable.
+- How are Montana districts changing over time in enrollment, demographic makeup, and staffing?
 - Map district-level metrics (poverty rate, student-teacher ratio, graduation rate) to visualize regional patterns
-- Requires joining to county or district-level GIS/geometry data
-- Tools: QGIS, Tableau, or Python (geopandas)
+    - Requires joining to county or district-level GIS/geometry data
+    - Tools: QGIS, Tableau, or Python (geopandas)
