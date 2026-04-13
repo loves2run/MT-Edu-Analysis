@@ -276,3 +276,16 @@
   - banded values and suppressed values not present in clean column
   - % symbol stripped from clean column to allow for further numeric analysis
 - verified acgr_cohort_size
+
+## 04-13-2026
+### Queried economically disadvantaged subgroup for graduation_rates_clean table for peer districts
+- pulled grad_rate_clean and grad_rate_raw for all 5 peer districts (Flathead H S, Missoula H S, Great Falls H S, Bozeman H S, Helena H S) across all 3 years of available data, filtered to subgroup LIKE '%Economically Disadvantaged%' and school_or_district = 'district'
+- findings: for 2022-2023: Missoula H S (73%), Great Falls H S (69%), Flathead H S (65%); Bozeman H S and Helena H S both reported banded values - i.e. no exact graduation rates
+- Flathead H S trend: 72% (2020-21) --> banded 65-69% (2021-22), --> 65% (2022-23); approximately a 7-point decline in grad rates for economically disadvantaged students
+- Bozeman and Helena are banded across all 3 years
+
+### Confirmed decision: no midpoints for banded values
+- considered implications of using narrow bands (e.g. 65-69%) affecting peer districts (Helena and Bozeman)
+- decision confirmed: data will not be used directly in analysis due to banding --> will use NULL + caveat. Bozeman and Helena are banded across all 3 years; midpoints would affect longitudinal analysis for all districts
+
+### sql/03_analysis.sql was created today.

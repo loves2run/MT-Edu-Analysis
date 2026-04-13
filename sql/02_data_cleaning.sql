@@ -430,9 +430,6 @@ from montana_schools.graduation_rates_raw grr
 where value = 'S'
 group by data_level;
 
--- **** step 4 goes here!!!!******
-
-
 
 -- step 5 from graduation_rates_raw_cleaning_checklist
 -- suppressed rows at district vs school level vs total rows in table unfiltered
@@ -560,15 +557,15 @@ alter column grad_rate_clean type real;
 /*
  * This query inserts values into new graduation_rates_clean table.
  * The INSERT INTO query below first filters out the rows with
- 	* value = '.' as previously decided. 
+    * value = '.' as previously decided. 
  * Conditional logic used to populate school_or_district column.
  * Added column for grad_rate_clean
- 	* Used regex to populate column with just those rows from
- 	* value column of graduation_rates_raw that contained full numbers
- 	* (e.g. '56%') and then removed the '%' and converted to INTEGER.
- 	* The remaining values were transformed to NULL.
+    * Used regex to populate column with just those rows from
+    * value column of graduation_rates_raw that contained full numbers
+    * (e.g. '56%') and then removed the '%' and converted to INTEGER.
+    * The remaining values were transformed to NULL.
  * Separate column (grad_rate_raw). It preserves the original raw string from the     
- 	* value column when the value could not be converted to a number (bands, suppressed, etc).
+    * value column when the value could not be converted to a number (bands, suppressed, etc).
  * leaid and denominator columns CAST to integer
  */
 insert into montana_schools.graduation_rates_clean (
@@ -694,7 +691,6 @@ from montana_schools.graduation_rates_clean
 where
 	school_year = '2022-2023'
 	and school like '%Flathead%';
-
 
 
 -- Verify values for acgr_cohort_size

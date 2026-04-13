@@ -118,6 +118,6 @@ After cleaning, confirm the cleaned table is well-formed and connects properly t
 
 **Why:** A clean table that doesn't join properly to your other data is useless.
 
-- [ ] Verify row counts by year and level match expectations
+- [x] Verify row counts by year and level match expectations
 - [ ] Test joins to `mt_schools_clean` at both district and school level — check for unmatched rows
-- [ ] Spot-check KPS to confirm it appears correctly
+- [x] Spot-check KPS to confirm it appears correctly
