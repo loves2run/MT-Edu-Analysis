@@ -289,3 +289,10 @@
 - decision confirmed: data will not be used directly in analysis due to banding --> will use NULL + caveat. Bozeman and Helena are banded across all 3 years; midpoints would affect longitudinal analysis for all districts
 
 ### sql/03_analysis.sql was created today.
+
+### Resource comparison for peer districts
+- Focused on school year 2022-2023 for resource comparison because available years in graduation_rates_clean table only included 2020-2023
+- Aggregated enrollment and FTE by district, then computed district-level student-teacher ratio
+- filtered out small schools with a population < 100 students
+Results: resources, measured as student_teacher_ratio very close for all peer districts- Missoula H S (14.72), Helena H S (14.83), Flathead H S (15.82), Great Falls H S (15.84) and Bozeman H S (16.28).
+Caveat: small schools with total_enrollment <100 were filtered out because their student-teacher ratio is structurally different and do not reflect typical staffing ratios. Including them would distort the district-level aggregate.
