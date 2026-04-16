@@ -296,3 +296,25 @@
 - filtered out small schools with a population < 100 students
 Results: resources, measured as student_teacher_ratio very close for all peer districts- Missoula H S (14.72), Helena H S (14.83), Flathead H S (15.82), Great Falls H S (15.84) and Bozeman H S (16.28).
 Caveat: small schools with total_enrollment <100 were filtered out because their student-teacher ratio is structurally different and do not reflect typical staffing ratios. Including them would distort the district-level aggregate.
+
+## 04-15-2026
+
+### Created and populated district_membership_clean table
+- New table capturing race/ethnicity demographic breakdown by district and school year
+- Derived from `district_membership` raw table
+- Columns: leaid, lea_name, school_year, race_ethnicity, student_count, total_enrollment, pct_enrollment
+- Join logic: race/ethnicity subtotal rows joined to `Education Unit Total` row to get denominator
+- GROUP BY races across sexes (M + F summed into combined student_count per race/ethnicity)
+- pct_enrollment derived: `ROUND(100.0 * student_count / total_enrollment, 1)`
+- Excluded MT Developmental Center (leaid 3000652) and Dept of Corrections-Adult (3000653) as non-school institutions
+- Excluded `No Category Codes` and `Not Specified` race_ethnicity values
+- 8386 rows inserted
+- Verified: pct_enrollment matches manual ROUND() calculation; row count confirmed
+
+## 04-16-2026
+
+### Verified district_membership_clean table
+- Check 1 (row count): confirmed 8386 rows. Derivation: 16856 raw subtotal rows - 84 excluded institution rows = 16772 / 2 (M+F sex rows collapsed by GROUP BY) = 8386
+- Check 2 (spot check): KPS 2022-2023 — 7 race/ethnicity categories, student_count sums exactly to total_enrollment (3101), pct_enrollment sums to exactly 100.0%. Category count confirmed against raw table.
+- Check 3 (manual math): Helena H S 2022-2023 — all 7 rows verified by hand. pct_enrollment matches ROUND(100.0 * student_count / total_enrollment, 1) for every row.
+- Table considered clean and ready for analysis

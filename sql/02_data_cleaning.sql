@@ -697,6 +697,128 @@ where
 -- 0 rows returned; row is clean
 select *
 from montana_schools.graduation_rates_clean
-where 
+where
 	acgr_cohort_size is null
 	or acgr_cohort_size = 0;
+
+-- ============================================================
+-- SECTION 3: district_membership → district_membership_clean
+-- ============================================================
+
+-- ====================================================
+-- STEP 1: Create district_membership_clean table
+-- ====================================================
+-- Captures race/ethnicity demographic breakdown by district and year
+-- pct_enrollment = student_count / total_enrollment * 100 (ROUND to 1 decimal)
+
+CREATE TABLE montana_schools.district_membership_clean(
+    leaid INTEGER,
+    lea_name VARCHAR(50),
+    school_year VARCHAR(50),
+    race_ethnicity VARCHAR(200),
+    student_count INTEGER,
+    total_enrollment INTEGER,
+    pct_enrollment REAL
+);
+
+-- ====================================================
+-- STEP 2: Insert into district_membership_clean
+-- ====================================================
+-- 4/15/26: 8386 rows added
+-- Joins race/ethnicity subtotal rows to Education Unit Total row per district/year
+-- Excludes MT Developmental Center (3000652) and Dept of Corrections-Adult (3000653)
+-- as institutional/non-school districts
+-- Groups by race_ethnicity to sum across sexes (M + F → combined student_count)
+
+INSERT INTO montana_schools.district_membership_clean(
+    school_year,
+    leaid,
+    lea_name,
+    race_ethnicity,
+    student_count,
+    total_enrollment,
+    pct_enrollment
+)
+SELECT
+    dm.school_year,
+    CAST(dm.leaid AS INTEGER),
+    dm.lea_name,
+    dm.race_ethnicity,
+    SUM(dm.student_count) AS student_count,
+    total.total_enrollment,
+    ROUND(100.0 * SUM(dm.student_count) / total.total_enrollment, 1) AS pct_enrollment
+FROM montana_schools.district_membership dm
+JOIN (
+    SELECT
+        leaid,
+        lea_name,
+        school_year,
+        student_count AS total_enrollment
+    FROM montana_schools.district_membership
+    WHERE
+        total_indicator = 'Education Unit Total'
+        AND leaid NOT IN (
+            '3000652', -- MT Developmental Ctr
+            '3000653'  -- Dept of Corrections-Adult
+        )
+) AS total
+    ON dm.leaid = total.leaid
+    AND dm.school_year = total.school_year
+WHERE
+    total_indicator LIKE '%Subtotal by Race/Ethnicity and Sex%'
+    AND race_ethnicity NOT IN ('No Category Codes', 'Not Specified')
+GROUP BY
+    dm.school_year,
+    dm.leaid,
+    dm.lea_name,
+    dm.race_ethnicity,
+    total.total_enrollment;
+
+-- ====================================================
+-- STEP 3: Verify district_membership_clean
+-- ====================================================
+
+-- Check 1: Row count — expect 8386
+-- Derivation: 16856 raw subtotal rows - 84 excluded institution rows = 16772 / 2 (M+F collapsed) = 8386
+SELECT COUNT(*) AS num_rows
+FROM montana_schools.district_membership_clean;
+-- Result: 8386 confirmed
+
+-- Check 2: Spot check a known district
+-- Confirm: 7 race/ethnicity categories, student_count sums to total_enrollment, pct_enrollment sums to 100%
+SELECT
+    COUNT(race_ethnicity) AS re_total_rows,
+    total_enrollment,
+    SUM(student_count) AS sum_stud_ct,
+    SUM(pct_enrollment) AS sum_pct_enrollment
+FROM montana_schools.district_membership_clean
+WHERE
+    school_year = '2022-2023'
+    AND leaid = 3015420
+GROUP BY total_enrollment;
+-- Result: 7 rows, total_enrollment = 3101, sum_stud_ct = 3101, sum_pct_enrollment = 100.0
+
+-- Confirm 7 categories matches raw table
+SELECT COUNT(DISTINCT race_ethnicity)
+FROM montana_schools.district_membership
+WHERE
+    school_year = '2022-2023'
+    AND leaid = '3015420'
+    AND total_indicator LIKE '%Subtotal by Race/Ethnicity and Sex%'
+    AND race_ethnicity NOT IN ('No Category Codes', 'Not Specified');
+-- Result: 7 confirmed
+
+-- Check 3: Manual math check — confirm pct_enrollment = ROUND(100.0 * student_count / total_enrollment, 1)
+SELECT
+    lea_name,
+    school_year,
+    race_ethnicity,
+    student_count,
+    total_enrollment,
+    pct_enrollment,
+    ROUND(100.0 * student_count / total_enrollment, 1) AS manual_check
+FROM montana_schools.district_membership_clean
+WHERE
+    school_year = '2022-2023'
+    AND leaid = 3013830;
+-- Result: Helena H S, all 7 rows verified by hand — pct_enrollment matches manual_check for all rows
