@@ -315,6 +315,6 @@ Caveat: small schools with total_enrollment <100 were filtered out because their
 
 ### Verified district_membership_clean table
 - Check 1 (row count): confirmed 8386 rows. Derivation: 16856 raw subtotal rows - 84 excluded institution rows = 16772 / 2 (M+F sex rows collapsed by GROUP BY) = 8386
-- Check 2 (spot check): KPS 2022-2023 — 7 race/ethnicity categories, student_count sums exactly to total_enrollment (3101), pct_enrollment sums to exactly 100.0%. Category count confirmed against raw table.
+- Check 2 (spot check): Flathead H S (AKA KPS) 2022-2023 — 7 race/ethnicity categories, student_count sums exactly to total_enrollment (3101), pct_enrollment sums to exactly 100.0%. Category count confirmed against raw table.
 - Check 3 (manual math): Helena H S 2022-2023 — all 7 rows verified by hand. pct_enrollment matches ROUND(100.0 * student_count / total_enrollment, 1) for every row.
 - Table considered clean and ready for analysis
