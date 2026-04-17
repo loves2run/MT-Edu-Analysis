@@ -14,7 +14,7 @@ Graduation rate analysis reflects the full Flathead H S cohort, which includes n
 ## Phase 1 — Current State (mt_schools_clean + graduation_rates_raw)
 
 1. How does KPS compare to peer districts of similar enrollment size in resources and outcomes — analyzed separately for elementary (Kalispell Elem) and high school (Flathead H S) levels?
-   - **Note (3/31/26):** High school outcomes available via graduation rates (graduation_rates_raw). Elementary outcomes not available — unable to obtain raw assessment scores or chronic absenteeism data from eddataexpress.ed.gov. Elementary comparison limited to resources only (enrollment, staffing, poverty).
+   - **Note (3/31/26):** High school outcomes available via graduation rates (graduation_rates_raw). Elementary outcomes not available — unable to obtain raw assessment scores or chronic absenteeism data from eddataexpress.ed.gov. Elementary comparison will not be performed due to insufficient data.
 
 2. Which school districts serve high-poverty communities?
 3. How do graduation rates vary across Montana districts and what factors correlate with higher/lower rates?
