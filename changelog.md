@@ -318,3 +318,21 @@ Caveat: small schools with total_enrollment <100 were filtered out because their
 - Check 2 (spot check): Flathead H S (AKA KPS) 2022-2023 — 7 race/ethnicity categories, student_count sums exactly to total_enrollment (3101), pct_enrollment sums to exactly 100.0%. Category count confirmed against raw table.
 - Check 3 (manual math): Helena H S 2022-2023 — all 7 rows verified by hand. pct_enrollment matches ROUND(100.0 * student_count / total_enrollment, 1) for every row.
 - Table considered clean and ready for analysis
+
+## 04-17-2026
+
+### Completed demographics comparison for KPS (i.e. Flathead H S) vs peer districts
+- Queried district_membership_clean to compare demographic makeup of KPS vs peer districts for 2022-2023
+- NOTE: 2022-2023 used because it was the only year with overlap between resource data and graduation rate data
+- Results: 
+  - Flathead H S (KPS) — least diverse: 90.1% White, lowest American Indian or Alaska Native (AIAN) (1.0%) of group; Hispanic/Latino (4.3%)
+  - Bozeman H S — 86.2% White, 1.3% AIAN, 7% Hispanic/Latino
+  - Missoula H S — 85.2% White, 6% AIAN, 3.9% Hispanic/Latino
+  - Helena H S — second most diverse: 2.5% AIAN, 7.1% Hispanic/Latino, 84.4% White
+  - Great Falls H S — most diverse: 9.7% AIAN, 6.1% Hispanic/Latino, only 74.3% White.
+- Will plan to create chart for finished project with the table created from this query
+
+### Compared peer district graduation rates for all 3 years (2020-2023) for "All Students in LEA"
+- queried graduation_rate_clean table for district-level data for subgroup "All Students in LEA" to obtain overall graduation rates for peer districts
+- KPS and Missoula graduation rates declined lognitudinally while other districts remained similar vs increased
+- KPS ranked last among peer districts in 2022-2023 
