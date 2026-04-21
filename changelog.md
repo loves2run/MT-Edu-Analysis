@@ -336,3 +336,30 @@ Caveat: small schools with total_enrollment <100 were filtered out because their
 - queried graduation_rate_clean table for district-level data for subgroup "All Students in LEA" to obtain overall graduation rates for peer districts
 - KPS and Missoula graduation rates declined lognitudinally while other districts remained similar vs increased
 - KPS ranked last among peer districts in 2022-2023 
+
+## 04-20-2026
+
+### Investigated school_lunch table for Q2 poverty analysis
+- Reviewed raw school_lunch data for Flathead and Glacier High Schools
+- Both schools show "Not reported" for all Free and Reduced-price Lunch rows; only Direct Certification counts are reported (Flathead: 174, Glacier: 135)
+- Researched Community Eligibility Provision (CEP): schools with ≥25% Identified Student Percentage (directly certified students) may serve all students free meals universally, eliminating individual FRL applications — explaining "Not reported" status
+- Identified limitation: poverty_pct in mt_schools_clean is calculated from FRL application counts; CEP schools show NULL or artificially low poverty because families no longer apply
+- Decision: poverty_pct is not a reliable poverty metric for CEP-participating schools
+
+### Decided to import SAIPE district-level poverty data for Q2
+- SAIPE (Small Area Income and Poverty Estimates) is a Census Bureau dataset providing annual district-level poverty estimates derived from Census/ACS/tax data — independent of FRL/CEP
+- Identified Montana-specific file: https://www2.census.gov/programs-surveys/saipe/datasets/2022/2022-school-districts/sd22-mt.txt
+- Downloaded national XLS file, filtered to Montana (400 rows), removed extra columns and blank rows
+- Columns retained: State Postal Code, State FIPS Code, District ID, Name, Estimated Total Population, Estimated Population 5-17, Estimated number of relevant children 5-17 in poverty
+- Note: no pre-calculated poverty rate column — will derive in SQL as ROUND(100.0 * poverty_children / population_5_17, 1)
+- Saved raw XLS copy; downloading Montana-only CSV for import to PostgreSQL
+- Join key: SAIPE District ID (5-digit) prepends state FIPS 30 to match leaid format in existing tables (e.g., 15420 → 3015420)
+
+## 04-21-2026
+
+### Imported SAIPE dataset and validated join key
+- dataset imported as saipe_district_poverty_2022_raw
+- 399 rows imported (count verified as a match to original SAIPE dataset for MT only rows)
+- leaid does not exist in SAIPE dataset, though can be derived by concatenating fips_code with dist_id columns and padding dist_id with sufficient zeros for a total of 7 characters to match leaid in mt_schools_clean table
+- tested the derived leaid against Flathead H S and several other leas where dist_id was less than 5 digits 
+  - results: concatenation + padding worked for all tests

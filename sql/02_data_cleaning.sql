@@ -822,3 +822,83 @@ WHERE
     school_year = '2022-2023'
     AND leaid = 3013830;
 -- Result: Helena H S, all 7 rows verified by hand — pct_enrollment matches manual_check for all rows
+
+-- ============================================================
+-- SECTION 4: SAIPE district poverty data
+-- ============================================================
+-- Source: U.S. Census Bureau SAIPE 2022 national XLS, filtered to Montana (400 rows with header, 399 without)
+-- URL: https://www2.census.gov/programs-surveys/saipe/datasets/2022/2022-school-districts/
+-- Motivation: poverty_pct in mt_schools_clean is FRL-based and understates poverty for
+--             CEP-participating schools. SAIPE is independent of FRL/CEP participation.
+-- Columns: state_postal, state_fips, district_id, district_name, est_total_population,
+--          est_population_5_17, est_children_poverty_5_17
+-- Derived column: poverty_rate = ROUND(100.0 * est_children_poverty_5_17 / est_population_5_17, 1)
+-- Join key: CAST('30' || LPAD(district_id::text, 5, '0') AS INTEGER) = leaid in other tables
+
+-- ====================================================
+-- STEP 1: Create saipe_district_poverty_2022_raw table
+-- ====================================================
+
+create table montana_schools.saipe_district_poverty_2022_raw (
+	state_post_code varchar(2),
+	fips_code integer,
+	dist_id integer,
+	lea_name varchar(200),
+	est_ttl_pop integer,
+	est_pop_5to17 integer,
+	est_ttl_5to17_poverty integer
+);
+
+-- table rows populated using import wizard (399 rows matched the googlesheet for original SAIPE dataset filtered to MT only rows)
+
+-- Verified row counts
+select
+	count(*)
+from montana_schools.saipe_district_poverty_2022_raw;
+
+	--check a few rows for content
+select *
+from montana_schools.saipe_district_poverty_2022_raw
+where lea_name like '%Flathead%';
+
+-- tested join for mt_schools_clean on SAIPE dataset
+/*
+lea_name                            dist_id     constructed_leid
+Ashland Elementary School District	8	        3000008
+Big Sky School K-12	                654	        3000654
+Broadus Elementary School District	6	        3000006
+Flathead High School District	    15420	    3015420
+*/
+select 
+	lea_name,
+	dist_id, 
+	'30' || LPAD(dist_id::text, 5, '0') as constructed_leaid
+from montana_schools.saipe_district_poverty_2022_raw
+where
+	lea_name like '%Flathead%'   --3015420
+	or lea_name like '%Ashland%' --3000008
+	or lea_name like '%Big Sky%' --3000654
+	or lea_name like '%Broadus%';--3000006
+
+/*
+district_name       leaid
+Broadus Elem	    3000006
+Broadus Elem	    3000006
+Ashland Elem	    3000008
+Ashland Elem	    3000008
+Big Sky School K-12	3000654
+Big Sky School K-12	3000654
+Big Sky School K-12	3000654
+Flathead H S	    3015420
+Flathead H S	    3015420
+*/
+select
+	district_name,
+	leaid
+from montana_schools.mt_schools_clean
+	where
+		school_year = '2022-2023'
+		and (leaid = '3015420'
+		or leaid = '3000008'
+		or leaid = '3000654'
+		or leaid = '3000006');
