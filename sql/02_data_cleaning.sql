@@ -902,3 +902,46 @@ from montana_schools.mt_schools_clean
 		or leaid = '3000008'
 		or leaid = '3000654'
 		or leaid = '3000006');
+
+-- ====================================================
+--STEP 2: Created/ Tested join for mt_schools_clean table 
+    --  on SAIPE dataset to add updated poverty data
+-- ====================================================
+
+-- 4/21/26: join saipe_district_poverty_2022_raw to mt_schools_clean
+select 	
+	msc.leaid,
+	msc.district_name,
+	msc.total_enrollment,
+	sdpr.est_pop_5to17,
+	sdpr.est_ttl_5to17_poverty,
+	ROUND(100.0 * sdpr.est_ttl_5to17_poverty / sdpr.est_pop_5to17, 1) as saipe_poverty_pct
+from montana_schools.mt_schools_clean msc
+left join montana_schools.saipe_district_poverty_2022_raw sdpr 
+	on msc.leaid = '30' || LPAD(sdpr.dist_id::text, 5, '0')
+where
+	msc.school_year = '2022-2023'
+	and msc.grade_lowest = '09'
+	and msc.grade_highest = '12'
+	and msc.total_enrollment > 100
+limit 5;
+
+-- 4/22/26: 
+-- null check: confirms all filtered mt_schools_clean rows matched a SAIPE row
+-- zero rows returned = full join coverage for 2022-2023 HS districts with enrollment > 100
+select 	
+	msc.leaid,
+	msc.district_name,
+	msc.total_enrollment,
+	sdpr.est_pop_5to17,
+	sdpr.est_ttl_5to17_poverty,
+	ROUND(100.0 * sdpr.est_ttl_5to17_poverty / sdpr.est_pop_5to17, 1) as saipe_poverty_pct
+from montana_schools.mt_schools_clean msc
+left join montana_schools.saipe_district_poverty_2022_raw sdpr 
+	on msc.leaid = '30' || LPAD(sdpr.dist_id::text, 5, '0')
+where
+	msc.school_year = '2022-2023'
+	and msc.grade_lowest = '09'
+	and msc.grade_highest = '12'
+	and msc.total_enrollment > 100
+	and sdpr.dist_id is null;

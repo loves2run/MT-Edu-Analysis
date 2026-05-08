@@ -363,3 +363,9 @@ Caveat: small schools with total_enrollment <100 were filtered out because their
 - leaid does not exist in SAIPE dataset, though can be derived by concatenating fips_code with dist_id columns and padding dist_id with sufficient zeros for a total of 7 characters to match leaid in mt_schools_clean table
 - tested the derived leaid against Flathead H S and several other leas where dist_id was less than 5 digits 
   - results: concatenation + padding worked for all tests
+
+## 04-22-2026
+
+### Confirmed all filtered mt_schools_clean rows matched a SAIPE row
+- checked for any null values being returned for dist_id column from SAIPE dataset after join
+- zero rows returned meaning full join coverage for 2022-2023 HS districts with enrollment > 100
